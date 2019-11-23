@@ -1,0 +1,24 @@
+<app-navbar></app-navbar>
+<div class="container p-3">
+    <app-places (messageEvent)="receiveMessage($event)"></app-places>
+</div>
+
+<div class="container p-3">
+    <div class="row">
+        <div class="col map">
+          <aol-map [width]="'500px'" height="'600px'">
+            <aol-view [zoom]="zoom">
+              <aol-coordinate [x]="lng" [y]="lat" [srid]="'EPSG:4326'"></aol-coordinate>
+            </aol-view>
+            <aol-layer-tile>
+              <aol-source-osm></aol-source-osm>
+            </aol-layer-tile>
+          </aol-map>
+        </div>
+
+        <div class="col" *ngIf="osrmRootObject">
+          Test
+        </div>
+    </div>
+</div>
+
