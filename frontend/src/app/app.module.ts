@@ -6,6 +6,7 @@ import { PlacesComponent } from './places/places.component';
 import { HttpClientModule, /* other http imports */ } from '@angular/common/http';
 import { AgmCoreModule} from '@agm/core';
 import {AngularOpenlayersModule} from 'ngx-openlayers';
+import { FilterComponent } from './filter/filter.component';
 
 
 @NgModule({
@@ -13,6 +14,7 @@ import {AngularOpenlayersModule} from 'ngx-openlayers';
     AppComponent,
     NavbarComponent,
     PlacesComponent,
+    FilterComponent,
   ],
   imports: [
     BrowserModule,
