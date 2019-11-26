@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restful import Api
 
 from footprint import Footprint
@@ -14,6 +15,7 @@ def define_api(app):
 
 def main():
     app = Flask(__name__)
+    CORS(app)
     api = define_api(app)
 
     app.run(port=5002)
