@@ -11,14 +11,14 @@ export class FilterComponent implements OnInit {
 
   supported_number_of_travellers = [1,2,3,4,5]
 
-  model = new Request("Amsterdam", "Rotterdam", 1, 5, 5, 5, 6.5);
+  // Default values
+  model = new Request("Amsterdam", "Rotterdam", supported_number_of_travellers[0], 5, 5, 5, 6.5);
 
   constructor() { }
 
-  submitted = false;
-  onSubmit() {
-    this.submitted = true;
-    console.log("Submitted")
+  onSubmit(form: NgForm) {
+    var request = form.value
+    console.log(request);
   }
 
   ngOnInit() {

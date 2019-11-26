@@ -1,6 +1,6 @@
 <div id="filter_container">
     <h3>Filter</h3>
-    <form>
+    <form (ngSubmit)="onSubmit(requestForm)" #requestForm="ngForm">
       <div class="form-group row">
         <label for="source" class="col-md-5">Origin</label>
         <div class="col-md-7">
