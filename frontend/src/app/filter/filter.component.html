@@ -4,46 +4,72 @@
       <div class="form-group row">
         <label for="source" class="col-md-5">Origin</label>
         <div class="col-md-7">
-          <input type="text" class="form-control" id="source" required>
+          <input type="text" class="form-control" id="source"
+          [(ngModel)]="model.source" name="source" #source="ngModel" required>
+          <div [hidden]="source.valid || source.pristine"
+               class="alert alert-danger">
+            Origin is required
+          </div>
         </div>
       </div>
       <div class="form-group row">
         <label for="dest" class="col-md-5">Destination</label>
         <div class="col-md-7">
-          <input type="text" class="form-control" id="dest" required>
+          <input type="text" class="form-control" id="dest"
+          [(ngModel)]="model.dest" name="dest" #dest="ngModel" required>
+          <div [hidden]="dest.valid || dest.pristine"
+               class="alert alert-danger">
+            Destination is required
+          </div>
         </div>
       </div>
       <div class="form-group row">
         <label for="number_of_travellers" class="col-md-5">Number of travellers</label>
         <div class="col-md-7">
-          <select id="number_of_travellers" class="form-control" required>
-            <option *ngFor="let travellers of supported_number_of_travellers" [value]="travellers">{{travellers}}</option>
+          <select id="number_of_travellers" class="form-control"
+          [(ngModel)]="model.number_of_travellers" name="number_of_travellers"
+          #number_of_travellers="ngModel" required>
+            <option *ngFor="let travellers of supported_number_of_travellers"
+            [value]="travellers">{{travellers}}</option>
           </select>
+          <div [hidden]="number_of_travellers.valid || number_of_travellers.pristine"
+               class="alert alert-danger">
+            Number of travellers is required
+          </div>
         </div>
       </div>
       <div class="form-group row">
         <label for="fuel_consumption_car" class="col-md-5">
           Fuel consumption of your car</label>
           <div class="col-md-7">
-            <input type="number" class="form-control" id="fuel_consumption_car" required>
+            <input type="number" class="form-control" id="fuel_consumption_car"
+            [(ngModel)]="model.fuel_consumption_car" name="fuel_consumption_car"
+            #fuel_consumption_car="ngModel" required>
+            <div [hidden]="fuel_consumption_car.valid || fuel_consumption_car.pristine"
+                 class="alert alert-danger">
+              Fuel consumption of car is required and must be a valid number
+            </div>
           </div>
       </div>
       <div class="form-group row">
         <label for="value_on_sustainability" class="col-md-5">Value on sustainability</label>
         <div class="col-md-7">
-          <input type="range" class="form-control" id="value_on_sustainability" min="0" max="10" required>
+          <input type="range" class="form-control" id="value_on_sustainability" min="0" max="10"
+          [(ngModel)]="model.value_on_sustainability" name="value_on_sustainability" required>
         </div>
       </div>
       <div class="form-group row">
         <label for="value_on_price" class="col-md-5">Value on price</label>
         <div class="col-md-7">
-          <input type="range" id="value_on_price" class="form-control" min="0" max="10" required>
+          <input type="range" id="value_on_price" class="form-control" min="0" max="10"
+          [(ngModel)]="model.value_on_price" name="value_on_price" required>
         </div>
       </div>
       <div class="form-group row">
         <label for="value_on_time" class="col-md-5">Value on time</label>
         <div class="col-md-7">
-          <input type="range" id="value_on_time" class="form-control" min="0" max="10" required>
+          <input type="range" id="value_on_time" class="form-control" min="0" max="10"
+          [(ngModel)]="model.value_on_time" name="value_on_time" required>
         </div>
       </div>
       <button type="submit" class="btn btn-success col-md-12">Submit</button>

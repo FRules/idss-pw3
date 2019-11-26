@@ -1,17 +1,19 @@
 <app-navbar></app-navbar>
 <app-filter></app-filter>
-<h3>Test</h3>
-<!--<app-results></app-results>-->
+
+
 
 <!--
 <div class="container p-3">
     <app-places (messageEvent)="receiveMessage($event)"></app-places>
 </div>
 -->
+
+<h3>Route</h3>
 <div class="container p-3">
     <div class="row">
         <div class="col map">
-          <aol-map [width]="'500px'" height="'600px'">
+          <aol-map [width]="'800px'" height="'900px'">
             <aol-view [zoom]="zoom">
               <aol-coordinate [x]="lng" [y]="lat" [srid]="'EPSG:4326'"></aol-coordinate>
             </aol-view>
@@ -26,3 +28,6 @@
         </div>
     </div>
 </div>
+
+<h3>Results</h3>
+<!--<app-results></app-results>-->
