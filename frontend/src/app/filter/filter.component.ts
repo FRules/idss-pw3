@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ajax } from 'rxjs/ajax';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { Observable } from 'rxjs';
 import { forkJoin } from 'rxjs';
 
 import { Request }    from '../request';
+import { Results }    from '../results';
+
 
 @Component({
   selector: 'app-filter',
@@ -14,10 +16,11 @@ import { Request }    from '../request';
 
 export class FilterComponent implements OnInit {
 
-  supportedNumberOfTravellers = [1,2,3,4,5]
+  supported_number_of_travellers = [1,2,3,4,5];
 
   // Default values
-  model = new Request("Amsterdam", "Rotterdam", this.supportedNumberOfTravellers[0], 5, 5, 5, 6.5);
+  model = new Request("Amsterdam", "Rotterdam", this.supported_number_of_travellers[0], 5, 5, 5, 7.0);
+  result = new Results();
 
   constructor() { }
 
@@ -39,21 +42,21 @@ export class FilterComponent implements OnInit {
       var carTravelPrice = 0;
       results.map(result => {
         if ("footprint" in result.response) {
-          footprint = result.response.footprint;
+          this.result.footprint = result.response.footprint;
         } else if ("car_travel_price" in result.response) {
-          carTravelPrice = result.response.car_travel_price;
+          this.result.carTravelPrice = result.response.car_travel_price;
         }
       })
       // Do something with the data
-      console.log(footprint);
-      console.log(carTravelPrice);
+      console.log(this.result.footprint);
+      console.log(this.result.carTravelPrice);
     });
   }
 
   ngOnInit() {
   }
 
-  getFootprintRequest(distance, numberOfTravellers, fuelConsumption, fuelType): Observable<Response> {
+  getFootprintRequest(distance, numberOfTravellers, fuelConsumption, fuelType): Observable<AjaxResponse> {
     var uri = `http://localhost:5002/footprint?distance=${distance}&` +
                 `numberOfTravellers=${numberOfTravellers}&` +
                 `fuelConsumption=${fuelConsumption}&` +
@@ -61,7 +64,7 @@ export class FilterComponent implements OnInit {
     return ajax(uri);
   }
 
-  getCarPriceRequest(distance, numberOfTravellers, fuelConsumption, fuelPrice): Observable<Response> {
+  getCarPriceRequest(distance, numberOfTravellers, fuelConsumption, fuelPrice): Observable<AjaxResponse> {
     var uri = `http://localhost:5002/carTravelPrice?distance=${distance}&` +
                 `numberOfTravellers=${numberOfTravellers}&` +
                 `fuelConsumption=${fuelConsumption}&` +
