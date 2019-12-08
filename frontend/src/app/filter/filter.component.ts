@@ -21,7 +21,7 @@ export class FilterComponent implements OnInit {
   fuel_types_map = { "Diesel": "diesel", "Gasoline": "motorGasoline" };
 
   supported_classes = ["First class", "Second class"]
-  supported_classes_map = ["FIRST", "SECOND"]
+  supported_classes_map = {"First class": "FIRST", "Second class": "SECOND"}
 
   // Default values
   model = new Request(new Date().toISOString().split('T')[0],
@@ -46,6 +46,8 @@ export class FilterComponent implements OnInit {
                       request.fuel_consumption_car, this.fuel_types_map[request.fuel_type]));
     observables.push(this.getCarPriceRequest(distance, request.number_of_travellers,
                       request.fuel_consumption_car, request.fuel_price));
+    observables.push(this.getTrainPriceRequest(request.source, request.dest,
+                      request.date, this.supported_classes_map[request.preferred_class], request.number_of_travellers));
     forkJoin(...observables).subscribe(results => {
       var footprint = 0;
       var carTravelPrice = 0;
@@ -54,12 +56,15 @@ export class FilterComponent implements OnInit {
           this.result.footprint = result.response.footprint;
         } else if ("car_travel_price" in result.response) {
           this.result.carTravelPrice = result.response.car_travel_price;
+        } else if ("train_price" in result.response) {
+          this.result.trainPrice = result.response.train_price;
         }
         this.submitted = true;
       })
       // Do something with the data
       console.log(this.result.footprint);
       console.log(this.result.carTravelPrice);
+      console.log(this.result.trainPrice)
     });
   }
 
@@ -79,6 +84,17 @@ export class FilterComponent implements OnInit {
                 `numberOfTravellers=${numberOfTravellers}&` +
                 `fuelConsumption=${fuelConsumption}&` +
                 `fuelPrice=${fuelPrice}`
+    return ajax(uri);
+  }
+
+  getTrainPriceRequest(origin, destination, date, chosenClass, numberOfTravellers): Observable<AjaxResponse> {
+    console.log(origin, destination, date, chosenClass, numberOfTravellers);
+
+    var uri = `http://localhost:5002/trainPrice?origin=${origin}&` +
+                `destination=${destination}&` +
+                `date=${date}&` +
+                `class=${chosenClass}&` +
+                `numberOfTravellers=${numberOfTravellers}`
     return ajax(uri);
   }
 
