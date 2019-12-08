@@ -2,6 +2,19 @@
     <h3>Filter</h3>
     <form (ngSubmit)="onSubmit(requestForm)" #requestForm="ngForm">
       <div class="form-group row">
+        <label for="date" class="col-md-5">
+          Date </label>
+          <div class="col-md-7">
+            <input type="date" class="form-control" id="date"
+            [(ngModel)]="model.date" name="date"
+            #date="ngModel" required>
+            <div [hidden]="date.valid || date.pristine"
+                 class="alert alert-danger">
+              Date is required and must be a valid date
+            </div>
+          </div>
+      </div>
+      <div class="form-group row">
         <label for="source" class="col-md-5">Origin</label>
         <div class="col-md-7">
           <input type="text" class="form-control" id="source"
@@ -78,6 +91,21 @@
               Fuel consumption of car is required and must be a valid number
             </div>
           </div>
+      </div>
+      <div class="form-group row">
+        <label for="preferred_class" class="col-md-5">Preferred class in train</label>
+        <div class="col-md-7">
+          <select id="preferred_classes" class="form-control"
+          [(ngModel)]="model.preferred_class" name="preferred_class"
+          #preferred_class="ngModel" required>
+            <option *ngFor="let preferred_class of supported_classes"
+            [value]="preferred_class">{{ preferred_class }}</option>
+          </select>
+          <div [hidden]="preferred_class.valid || preferred_class.pristine"
+               class="alert alert-danger">
+            Preferred class is required
+          </div>
+        </div>
       </div>
       <div class="form-group row">
         <label for="value_on_sustainability" class="col-md-5">Value on sustainability</label>

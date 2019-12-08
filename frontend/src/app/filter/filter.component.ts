@@ -20,12 +20,16 @@ export class FilterComponent implements OnInit {
   supported_fuel_types = ["Diesel", "Gasoline"]
   fuel_types_map = { "Diesel": "diesel", "Gasoline": "motorGasoline" };
 
+  supported_classes = ["First class", "Second class"]
+  supported_classes_map = ["FIRST", "SECOND"]
+
   // Default values
-  model = new Request("Amsterdam",
+  model = new Request(new Date().toISOString().split('T')[0],
+                      "Amsterdam",
                       "Rotterdam",
                       this.supported_number_of_travellers[0],
                       this.supported_fuel_types[0],
-                      1.46, 5, 5, 5, 7.0);
+                      1.46, 7.0, this.supported_classes[0], 5, 5, 5 );
   result = new Results();
   submitted = false;
   constructor() { }
