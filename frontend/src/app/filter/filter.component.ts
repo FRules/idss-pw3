@@ -17,26 +17,31 @@ import { Results }    from '../results';
 export class FilterComponent implements OnInit {
 
   supported_number_of_travellers = [1,2,3,4,5];
+  supported_fuel_types = ["Diesel", "Gasoline"]
+  fuel_types_map = { "Diesel": "diesel", "Gasoline": "motorGasoline" };
 
   // Default values
-  model = new Request("Amsterdam", "Rotterdam", this.supported_number_of_travellers[0], 5, 5, 5, 7.0);
+  model = new Request("Amsterdam",
+                      "Rotterdam",
+                      this.supported_number_of_travellers[0],
+                      this.supported_fuel_types[0],
+                      1.46, 5, 5, 5, 7.0);
   result = new Results();
-
+  submitted = false;
   constructor() { }
 
   onSubmit(form: NgForm) {
+    //submitted = true;
     var request = form.value
     console.log(request);
 
     const distance = 5000; // has to be fetched from open street map by Piotr
-    const fuelType = "diesel"; // maybe include in the frontend? Or just leave it const?
-    const fuelPrice = 1.46; // maybe include in the frontend? Or just leave it const?
 
     var observables = []
     observables.push(this.getFootprintRequest(distance, request.number_of_travellers,
-                      request.fuel_consumption_car, fuelType));
+                      request.fuel_consumption_car, this.fuel_types_map[request.fuel_type]));
     observables.push(this.getCarPriceRequest(distance, request.number_of_travellers,
-                      request.fuel_consumption_car, fuelPrice));
+                      request.fuel_consumption_car, request.fuel_price));
     forkJoin(...observables).subscribe(results => {
       var footprint = 0;
       var carTravelPrice = 0;
@@ -46,6 +51,7 @@ export class FilterComponent implements OnInit {
         } else if ("car_travel_price" in result.response) {
           this.result.carTravelPrice = result.response.car_travel_price;
         }
+        this.submitted = true;
       })
       // Do something with the data
       console.log(this.result.footprint);
