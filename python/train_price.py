@@ -20,22 +20,24 @@ class TrainPrice(Resource):
 
         trip = self.train_search(args["origin"], args["destination"], args["date"])["trips"][0]
         stops = self.get_stops(trip)
-        price = self.get_price(trip, args["class"])
+        price = self.get_price(trip, args["class"], int(args["numberOfTravellers"]))
 
         return jsonify({
-            "duration": trip["plannedDurationInMinutes"],
-            "stops": stops,
-            "price": price
+            "train_data": {
+                "duration": trip["plannedDurationInMinutes"],
+                "stops": stops,
+                "price": price
+            }
         })
 
     @staticmethod
-    def get_price(trip, chosen_class):
+    def get_price(trip, chosen_class, number_of_travellers):
         cheapest_price = 9999999999
         for fare in trip["fares"]:
             if fare["travelClass"] == chosen_class and fare["discountType"] == "NO_DISCOUNT":
                 if cheapest_price > fare["priceInCents"]:
                     cheapest_price = fare["priceInCents"]
-        return float(cheapest_price) / 100.0
+        return (float(cheapest_price) / 100.0) * number_of_travellers
 
     @staticmethod
     def get_stops(trip):

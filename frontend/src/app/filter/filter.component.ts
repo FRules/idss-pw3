@@ -26,7 +26,7 @@ export class FilterComponent implements OnInit {
   // Default values
   model = new Request(new Date().toISOString().split('T')[0],
                       "Amsterdam",
-                      "Rotterdam",
+                      "Utrecht",
                       this.supported_number_of_travellers[0],
                       this.supported_fuel_types[0],
                       1.46, 7.0, this.supported_classes[0], 5, 5, 5 );
@@ -46,7 +46,7 @@ export class FilterComponent implements OnInit {
                       request.fuel_consumption_car, this.fuel_types_map[request.fuel_type]));
     observables.push(this.getCarPriceRequest(distance, request.number_of_travellers,
                       request.fuel_consumption_car, request.fuel_price));
-    observables.push(this.getTrainPriceRequest(request.source, request.dest,
+    observables.push(this.getTrainDataRequest(request.source, request.dest,
                       request.date, this.supported_classes_map[request.preferred_class], request.number_of_travellers));
     forkJoin(...observables).subscribe(results => {
       var footprint = 0;
@@ -56,15 +56,15 @@ export class FilterComponent implements OnInit {
           this.result.footprint = result.response.footprint;
         } else if ("car_travel_price" in result.response) {
           this.result.carTravelPrice = result.response.car_travel_price;
-        } else if ("train_price" in result.response) {
-          this.result.trainPrice = result.response.train_price;
+        } else if ("train_data" in result.response) {
+          this.result.trainData = result.response.train_data;
         }
         this.submitted = true;
       })
       // Do something with the data
       console.log(this.result.footprint);
       console.log(this.result.carTravelPrice);
-      console.log(this.result.trainPrice)
+      console.log(this.result.trainData)
     });
   }
 
@@ -87,7 +87,7 @@ export class FilterComponent implements OnInit {
     return ajax(uri);
   }
 
-  getTrainPriceRequest(origin, destination, date, chosenClass, numberOfTravellers): Observable<AjaxResponse> {
+  getTrainDataRequest(origin, destination, date, chosenClass, numberOfTravellers): Observable<AjaxResponse> {
     console.log(origin, destination, date, chosenClass, numberOfTravellers);
 
     var uri = `http://localhost:5002/trainPrice?origin=${origin}&` +
