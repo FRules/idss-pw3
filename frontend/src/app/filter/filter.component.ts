@@ -21,7 +21,7 @@ export class FilterComponent implements OnInit {
   fuel_types_map = { "Diesel": "diesel", "Gasoline": "motorGasoline" };
 
   supported_classes = ["First class", "Second class"]
-  supported_classes_map = {"First class": "FIRST", "Second class": "SECOND"}
+  supported_classes_map = {"First class": "FIRST_CLASS", "Second class": "SECOND_CLASS"}
 
   // Default values
   model = new Request(new Date().toISOString().split('T')[0],

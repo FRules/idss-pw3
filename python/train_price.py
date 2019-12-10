@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import Resource
 from flask_jsonpify import jsonify
 
-from urllib.request import Request, urlopen  # Python 3
+from urllib.request import Request, urlopen
 import json
 
 
@@ -18,29 +18,40 @@ class TrainPrice(Resource):
                 return jsonify({"error": "Not all parameters provided. Needed parameters: "
                                          "origin, destination, date, class, numberOfTravellers"})
 
-        return jsonify({"train_price": self.train_price(
-            args["origin"],
-            args["destination"],
-            args["date"],
-            args["class"],
-            int(args["numberOfTravellers"])
-        )})
+        trip = self.train_search(args["origin"], args["destination"], args["date"])["trips"][0]
+        stops = self.get_stops(trip)
+        price = self.get_price(trip, args["class"])
 
-    def train_price(self, origin, destination, date, chosen_class, number_of_travellers):
-        data = self.price_search(date, origin, destination)
+        return jsonify({
+            "duration": trip["plannedDurationInMinutes"],
+            "stops": stops,
+            "price": price
+        })
 
-        # For the ease of use: Only look in the route without options for ease of use.
-        # In the other list there are fixed price tickets like one for children and supplements
-        # for a single use ov chipcard and for the international IC
-        routes_without_options = data['priceOptions'][1]['totalPrices']
+    @staticmethod
+    def get_price(trip, chosen_class):
+        cheapest_price = 9999999999
+        for fare in trip["fares"]:
+            if fare["travelClass"] == chosen_class and fare["discountType"] == "NO_DISCOUNT":
+                if cheapest_price > fare["priceInCents"]:
+                    cheapest_price = fare["priceInCents"]
+        return float(cheapest_price) / 100.0
 
-        for item in routes_without_options:
-            if item['discountType'] == 'NONE' and item['classType'] == chosen_class:
-                return item['price'] * number_of_travellers
+    @staticmethod
+    def get_stops(trip):
+        stops = []
+        for stop in trip["legs"][0]["stops"]:
+            stops.append({
+                "lat": stop["lat"],
+                "lng": stop["lng"],
+                "name": stop["name"]
+            })
+        return stops
 
-    def price_search(self, date, fromstation, tostation):
-        url = 'https://gateway.apiportal.ns.nl/public-prijsinformatie/prices/?'
-        final_url = url + "&date=" + date + "&fromStation=" + fromstation + "&toStation=" + tostation
-        req = Request(final_url)
+    def train_search(self, origin, destination, date):
+        url = 'https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/trips'
+        url = url + '?fromStation=' + str(origin) + '&toStation=' + str(destination)
+        url = url + '&dateTime=' + date
+        req = Request(url)
         req.add_header('Ocp-Apim-Subscription-Key', self.apikey)
         return json.load(urlopen(req))
