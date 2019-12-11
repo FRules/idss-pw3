@@ -90,7 +90,7 @@ export class FilterComponent implements OnInit {
   getTrainDataRequest(origin, destination, date, chosenClass, numberOfTravellers): Observable<AjaxResponse> {
     console.log(origin, destination, date, chosenClass, numberOfTravellers);
 
-    var uri = `http://localhost:5002/trainPrice?origin=${origin}&` +
+    var uri = `http://localhost:5002/trainData?origin=${origin}&` +
                 `destination=${destination}&` +
                 `date=${date}&` +
                 `class=${chosenClass}&` +

@@ -4,5 +4,5 @@
 ## Requirements
 
 ```
-pip install flask flask-cors flask-jsonpify flask-restful
+pip install flask flask-cors flask-jsonpify flask-restful geopy
 ```

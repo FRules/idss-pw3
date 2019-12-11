@@ -4,14 +4,14 @@ from flask_restful import Api
 
 from footprint import Footprint
 from car_travel_price import CarTravelPrice
-from train_price import TrainPrice
+from train_data import TrainData
 
 
 def define_api(app):
     api = Api(app)
     api.add_resource(Footprint, '/footprint')
     api.add_resource(CarTravelPrice, '/carTravelPrice')
-    api.add_resource(TrainPrice, '/trainPrice')
+    api.add_resource(TrainData, '/trainData')
     return api
 
 
