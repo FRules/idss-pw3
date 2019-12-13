@@ -35,12 +35,14 @@ class TrainData(Resource):
 
     @staticmethod
     def get_price(trip, chosen_class, number_of_travellers):
+        # TODO(Piotr): Decide if we show results (kg and prices) per person or for all people
+        del number_of_travellers
         cheapest_price = 9999999999
         for fare in trip["fares"]:
             if fare["travelClass"] == chosen_class and fare["discountType"] == "NO_DISCOUNT":
                 if cheapest_price > fare["priceInCents"]:
                     cheapest_price = fare["priceInCents"]
-        return (float(cheapest_price) / 100.0) * number_of_travellers
+        return float(cheapest_price) / 100.0
 
     @staticmethod
     def get_stops(trip):

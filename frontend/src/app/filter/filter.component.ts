@@ -65,6 +65,7 @@ export class FilterComponent {
 
     const observables = [this.getCarFootprintRequest(osrmRootObject.routes[0].distance, request.trip_number_of_travellers,
       request.car_fuel_consumption, this.fuelTypesMap[request.car_fuel_type]),
+      this.getTrainFootprintRequest(localResult.train_data.distance * 1000),
       this.getCarPriceRequest(osrmRootObject.routes[0].distance, request.trip_number_of_travellers,
         request.car_fuel_consumption, request.car_fuel_price)];
 
@@ -77,10 +78,15 @@ export class FilterComponent {
   }
 
   getCarFootprintRequest(distance, numberOfTravellers, fuelConsumption, fuelType): Observable<AjaxResponse> {
-    const uri = `http://localhost:5002/footprint?distance=${distance / 1000}&` +
+    const uri = `http://localhost:5002/footprint/car?distance=${distance / 1000}&` +
       `numberOfTravellers=${numberOfTravellers}&` +
       `fuelConsumption=${fuelConsumption}&` +
       `fuelType=${fuelType}`;
+    return ajax(uri);
+  }
+
+  getTrainFootprintRequest(distance): Observable<AjaxResponse> {
+    const uri = `http://localhost:5002/footprint/train?distance=${distance / 1000}`;
     return ajax(uri);
   }
 

@@ -7,6 +7,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {AgmCoreModule} from '@agm/core';
 import {FilterComponent} from './filter/filter.component';
 import {LeafletModule} from '@asymmetrik/ngx-leaflet';
+import {DurationFormatPipe} from './pipes/duration-format.pipe';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import {LeafletModule} from '@asymmetrik/ngx-leaflet';
     AppComponent,
     NavbarComponent,
     FilterComponent,
+    DurationFormatPipe
   ],
   imports: [
     BrowserModule,

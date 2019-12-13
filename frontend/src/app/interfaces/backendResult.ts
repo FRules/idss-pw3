@@ -5,6 +5,7 @@ export interface BackendResult {
   car_travel_price?: number;
   car_data?: OsrmRootObject;
   train_data?: TrainData;
+  train_footprint?: number;
 }
 
 export interface TrainData {

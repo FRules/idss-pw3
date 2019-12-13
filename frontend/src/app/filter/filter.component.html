@@ -135,33 +135,21 @@
     <h3>Results</h3>
     <table class='table'>
       <tr>
-        <td>Car footprint</td>
-        <td>{{ result.car_footprint }}</td>
+        <th>Vehicle</th><th>Footprint</th><th>Price</th><th>Duration</th><th>Distance</th>
       </tr>
       <tr>
-        <td>Car price</td>
-        <td>{{ result.car_travel_price }}</td>
+        <td><em>Car</em></td>
+        <td>{{ result.car_footprint | number:'1.2-2' }}kg</td>
+        <td>{{ result.car_travel_price | number:'1.2-2' }}€</td>
+        <td>{{ result.car_data.routes[0].duration | durationFormat: 's':'hhmmss'}}</td>
+        <td>{{ (result.car_data.routes[0].distance / 1000) | number:'1.2-2' }}km</td>
       </tr>
       <tr>
-        <td>Car duration</td>
-        <td>{{ result.car_data.routes[0].duration / 60 }}</td>
-      </tr>
-      <tr>
-        <td>Car distance</td>
-        <td>{{ result.car_data.routes[0].distance / 1000 }}</td>
-      </tr>
-
-      <tr>
-        <td>Train price</td>
-        <td><span>{{ result.train_data.price }}</span></td>
-      </tr>
-      <tr>
-        <td>Train duration</td>
-        <td><span>{{ result.train_data.duration }}</span></td>
-      </tr>
-      <tr>
-        <td>Train distance</td>
-        <td><span>{{ result.train_data.distance }}</span></td>
+        <td><em>Train</em></td>
+        <td>{{ result.train_footprint | number:'1.2-2' }}kg</td>
+        <td>{{ result.train_data.price | number:'1.2-2' }}€</td>
+        <td>{{ (result.train_data.duration * 60) | durationFormat: 's':'hhmmss' }}</td>
+        <td>{{ result.train_data.distance | number:'1.2-2' }}km</td>
       </tr>
     </table>
   </div>
