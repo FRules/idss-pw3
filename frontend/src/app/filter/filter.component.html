@@ -144,15 +144,15 @@
         </tr>
         <tr>
           <td>Train price</td>
-          <td>{{ result.trainData.price }}</td>
+          <td><span *ngIf="result.trainData !== undefined">{{ result.trainData.price }}</span></td>
         </tr>
         <tr>
           <td>Train duration</td>
-          <td>{{ result.trainData.duration }}</td>
+          <td><span *ngIf="result.trainData !== undefined">{{ result.trainData.duration }}</span></td>
         </tr>
         <tr>
           <td>Train distance</td>
-          <td>{{ result.trainData.distance }}</td>
+          <td><span *ngIf="result.trainData !== undefined">{{ result.trainData.distance }}</span></td>
         </tr>
       </table>
     </div>
