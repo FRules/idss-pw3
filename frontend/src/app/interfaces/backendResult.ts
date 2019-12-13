@@ -1,6 +1,9 @@
+import {OsrmRootObject} from './osrm';
+
 export interface BackendResult {
-  footprint?: number;
+  car_footprint?: number;
   car_travel_price?: number;
+  car_data?: OsrmRootObject;
   train_data?: TrainData;
 }
 
@@ -8,5 +11,11 @@ export interface TrainData {
   price: number;
   duration: number;
   distance: number;
-  stops: [];
+  stops: TrainStop[];
+}
+
+export interface TrainStop {
+  lat: number;
+  lng: number;
+  name: string;
 }

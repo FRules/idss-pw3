@@ -135,13 +135,22 @@
     <h3>Results</h3>
     <table class='table'>
       <tr>
-        <td>Footprint</td>
-        <td>{{ result.footprint }}</td>
+        <td>Car footprint</td>
+        <td>{{ result.car_footprint }}</td>
       </tr>
       <tr>
-        <td>Car travel price</td>
+        <td>Car price</td>
         <td>{{ result.car_travel_price }}</td>
       </tr>
+      <tr>
+        <td>Car duration</td>
+        <td>{{ result.car_data.routes[0].duration / 60 }}</td>
+      </tr>
+      <tr>
+        <td>Car distance</td>
+        <td>{{ result.car_data.routes[0].distance / 1000 }}</td>
+      </tr>
+
       <tr>
         <td>Train price</td>
         <td><span>{{ result.train_data.price }}</span></td>

@@ -1,12 +1,6 @@
 <app-navbar></app-navbar>
 <app-filter (resultMessageEvent)="receiveResultMessage($event)"></app-filter>
 
-<!--
-<div class="container p-3">
-    <app-places (messageEvent)="receiveMessage($event)"></app-places>
-</div>
--->
-
 <h3>Route</h3>
 <div class="container p-3">
   <div class="row">
@@ -15,11 +9,8 @@
            leaflet
            [leafletOptions]="options"
       >
+        <div *ngIf="showLayers" [leafletLayers]="layers"></div>
       </div>
-    </div>
-
-    <div class="col" *ngIf="osrmRootObject">
-      Test
     </div>
   </div>
 </div>

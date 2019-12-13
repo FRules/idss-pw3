@@ -7,7 +7,7 @@ import json
 from urllib.parse import urlencode
 
 
-class Footprint(Resource):
+class CarFootprint(Resource):
 
     required_parameters = ["distance", "fuelConsumption", "fuelType", "numberOfTravellers"]
 
@@ -18,7 +18,7 @@ class Footprint(Resource):
                 return jsonify({"error": "Not all parameters provided. Needed parameters: "
                                          "distance, fuelConsumption, fuelType, numberOfTravellers"})
 
-        return jsonify({"footprint": self.footprint(
+        return jsonify({"car_footprint": self.footprint(
             float(args["distance"]),
             float(args["fuelConsumption"]),
             args["fuelType"],

@@ -4,6 +4,8 @@ import {forkJoin, Observable} from 'rxjs';
 
 import {BackendRequest} from '../interfaces/backendRequest';
 import {BackendResult} from '../interfaces/backendResult';
+import {PlacesService} from '../services/places/places.service';
+import {OsrmRootObject} from '../interfaces/osrm';
 
 
 @Component({
@@ -40,30 +42,42 @@ export class FilterComponent {
 
   result: BackendResult = null;
 
-  onSubmit() {
+
+  constructor(private placesService: PlacesService) {
+  }
+
+  async onSubmit() {
     this.result = null;
     const request: BackendRequest = this.formModel;
 
-    // TODO(Dominik): has to be fetched from open street map by Piotr
-    const distance = 5000;
+    const myReduceFn = ((previousValue, currentValue) => ({...previousValue, ...currentValue}));
 
-    const observables = [this.getFootprintRequest(distance, request.trip_number_of_travellers,
+    const trainDataAjaxResponse: AjaxResponse = await this.getTrainDataRequest(request.trip_source, request.trip_dest,
+      request.trip_date, this.supportedClassesMap[request.train_preferred_class],
+      request.trip_number_of_travellers).toPromise();
+
+    const localResult: BackendResult = trainDataAjaxResponse.response;
+
+    const osrmRootObject: OsrmRootObject = await this.placesService.getOsrmResponse(localResult.train_data.stops[0],
+      localResult.train_data.stops[localResult.train_data.stops.length - 1]).toPromise();
+
+    localResult.car_data = osrmRootObject;
+
+    const observables = [this.getCarFootprintRequest(osrmRootObject.routes[0].distance, request.trip_number_of_travellers,
       request.car_fuel_consumption, this.fuelTypesMap[request.car_fuel_type]),
-      this.getCarPriceRequest(distance, request.trip_number_of_travellers,
-        request.car_fuel_consumption, request.car_fuel_price),
-      this.getTrainDataRequest(request.trip_source, request.trip_dest,
-        request.trip_date, this.supportedClassesMap[request.train_preferred_class], request.trip_number_of_travellers)];
+      this.getCarPriceRequest(osrmRootObject.routes[0].distance, request.trip_number_of_travellers,
+        request.car_fuel_consumption, request.car_fuel_price)];
 
     forkJoin(observables).subscribe(ajaxResponses => {
       this.result = ajaxResponses.map((ajaxResponse: AjaxResponse) => {
         return ajaxResponse.response;
-      }).concat().reduce(((previousValue, currentValue) => ({...previousValue, ...currentValue})), {});
+      }).concat().reduce(myReduceFn, localResult);
       this.resultMessageEvent.emit(this.result);
     });
   }
 
-  getFootprintRequest(distance, numberOfTravellers, fuelConsumption, fuelType): Observable<AjaxResponse> {
-    const uri = `http://localhost:5002/footprint?distance=${distance}&` +
+  getCarFootprintRequest(distance, numberOfTravellers, fuelConsumption, fuelType): Observable<AjaxResponse> {
+    const uri = `http://localhost:5002/footprint?distance=${distance / 1000}&` +
       `numberOfTravellers=${numberOfTravellers}&` +
       `fuelConsumption=${fuelConsumption}&` +
       `fuelType=${fuelType}`;
@@ -71,7 +85,7 @@ export class FilterComponent {
   }
 
   getCarPriceRequest(distance, numberOfTravellers, fuelConsumption, fuelPrice): Observable<AjaxResponse> {
-    const uri = `http://localhost:5002/carTravelPrice?distance=${distance}&` +
+    const uri = `http://localhost:5002/carTravelPrice?distance=${distance / 1000}&` +
       `numberOfTravellers=${numberOfTravellers}&` +
       `fuelConsumption=${fuelConsumption}&` +
       `fuelPrice=${fuelPrice}`;

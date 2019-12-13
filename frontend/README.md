@@ -12,4 +12,5 @@
         1. Go to `osrm` directory in project's root.
         2. Run `docker run -t -i -p 5000:5000 -v $(pwd):/data osrm/osrm-backend:v5.22.0 osrm-routed /data/netherlands-latest.osrm`
 5. Install `nodejs` dependencies using `npm install`.
-6. Start frontend using `npm start`.
+6. Install _Angular's_ command line interface using `npm install -g @angular/cli`.
+7. Start frontend using `npm start`.
