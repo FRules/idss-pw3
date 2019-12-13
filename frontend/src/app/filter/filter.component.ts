@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { ajax, AjaxResponse } from 'rxjs/ajax';
-import { Observable } from 'rxjs';
-import { forkJoin } from 'rxjs';
+import {Component, EventEmitter, Output} from '@angular/core';
+import {ajax, AjaxResponse} from 'rxjs/ajax';
+import {forkJoin, Observable} from 'rxjs';
 
-import { Request }    from '../request';
-import { Results }    from '../results';
+import {BackendRequest} from '../interfaces/backendRequest';
+import {BackendResult} from '../interfaces/backendResult';
 
 
 @Component({
@@ -14,87 +12,78 @@ import { Results }    from '../results';
   styleUrls: ['./filter.component.css']
 })
 
-export class FilterComponent implements OnInit {
+export class FilterComponent {
 
-  supported_number_of_travellers = [1,2,3,4,5];
-  supported_fuel_types = ["Diesel", "Gasoline"]
-  fuel_types_map = { "Diesel": "diesel", "Gasoline": "motorGasoline" };
+  @Output() resultMessageEvent = new EventEmitter<BackendResult>();
 
-  supported_classes = ["First class", "Second class"]
-  supported_classes_map = {"First class": "FIRST_CLASS", "Second class": "SECOND_CLASS"}
+  supportedNumberOfTravellers = [1, 2, 3, 4, 5];
+  supportedFuelTypes = ['Diesel', 'Gasoline'];
+  fuelTypesMap = {Diesel: 'diesel', Gasoline: 'motorGasoline'};
 
-  // Default values
-  model = new Request(new Date().toISOString().split('T')[0],
-                      "Amsterdam",
-                      "Utrecht",
-                      this.supported_number_of_travellers[0],
-                      this.supported_fuel_types[0],
-                      1.46, 7.0, this.supported_classes[0], 5, 5, 5 );
-  result = new Results();
-  submitted = false;
-  constructor() { }
+  supportedClasses = ['First class', 'Second class'];
+  supportedClassesMap = {'First class': 'FIRST_CLASS', 'Second class': 'SECOND_CLASS'};
 
-  onSubmit(form: NgForm) {
-    //submitted = true;
-    var request = form.value
-    console.log(request);
+  // Default values for form
+  formModel: BackendRequest = {
+    trip_date: new Date().toISOString().split('T')[0],
+    trip_source: 'Amsterdam',
+    trip_dest: 'Utrecht',
+    trip_number_of_travellers: this.supportedNumberOfTravellers[0],
+    car_fuel_type: this.supportedFuelTypes[0],
+    car_fuel_price: 1.46,
+    car_fuel_consumption: 7.0,
+    train_preferred_class: this.supportedClasses[0],
+    weight_for_sustainability: 5,
+    weight_for_price: 5,
+    weight_for_time: 5
+  };
 
-    const distance = 5000; // has to be fetched from open street map by Piotr
+  result: BackendResult = null;
 
-    var observables = []
-    observables.push(this.getFootprintRequest(distance, request.number_of_travellers,
-                      request.fuel_consumption_car, this.fuel_types_map[request.fuel_type]));
-    observables.push(this.getCarPriceRequest(distance, request.number_of_travellers,
-                      request.fuel_consumption_car, request.fuel_price));
-    observables.push(this.getTrainDataRequest(request.source, request.dest,
-                      request.date, this.supported_classes_map[request.preferred_class], request.number_of_travellers));
-    forkJoin(...observables).subscribe(results => {
-      var footprint = 0;
-      var carTravelPrice = 0;
-      results.map(result => {
-        if ("footprint" in result.response) {
-          this.result.footprint = result.response.footprint;
-        } else if ("car_travel_price" in result.response) {
-          this.result.carTravelPrice = result.response.car_travel_price;
-        } else if ("train_data" in result.response) {
-          this.result.trainData = result.response.train_data;
-        }
-        this.submitted = true;
-      })
-      // Do something with the data
-      console.log(this.result.footprint);
-      console.log(this.result.carTravelPrice);
-      console.log(this.result.trainData)
+  onSubmit() {
+    this.result = null;
+    const request: BackendRequest = this.formModel;
+
+    // TODO(Dominik): has to be fetched from open street map by Piotr
+    const distance = 5000;
+
+    const observables = [this.getFootprintRequest(distance, request.trip_number_of_travellers,
+      request.car_fuel_consumption, this.fuelTypesMap[request.car_fuel_type]),
+      this.getCarPriceRequest(distance, request.trip_number_of_travellers,
+        request.car_fuel_consumption, request.car_fuel_price),
+      this.getTrainDataRequest(request.trip_source, request.trip_dest,
+        request.trip_date, this.supportedClassesMap[request.train_preferred_class], request.trip_number_of_travellers)];
+
+    forkJoin(observables).subscribe(ajaxResponses => {
+      this.result = ajaxResponses.map((ajaxResponse: AjaxResponse) => {
+        return ajaxResponse.response;
+      }).concat().reduce(((previousValue, currentValue) => ({...previousValue, ...currentValue})), {});
+      this.resultMessageEvent.emit(this.result);
     });
   }
 
-  ngOnInit() {
-  }
-
   getFootprintRequest(distance, numberOfTravellers, fuelConsumption, fuelType): Observable<AjaxResponse> {
-    var uri = `http://localhost:5002/footprint?distance=${distance}&` +
-                `numberOfTravellers=${numberOfTravellers}&` +
-                `fuelConsumption=${fuelConsumption}&` +
-                `fuelType=${fuelType}`
+    const uri = `http://localhost:5002/footprint?distance=${distance}&` +
+      `numberOfTravellers=${numberOfTravellers}&` +
+      `fuelConsumption=${fuelConsumption}&` +
+      `fuelType=${fuelType}`;
     return ajax(uri);
   }
 
   getCarPriceRequest(distance, numberOfTravellers, fuelConsumption, fuelPrice): Observable<AjaxResponse> {
-    var uri = `http://localhost:5002/carTravelPrice?distance=${distance}&` +
-                `numberOfTravellers=${numberOfTravellers}&` +
-                `fuelConsumption=${fuelConsumption}&` +
-                `fuelPrice=${fuelPrice}`
+    const uri = `http://localhost:5002/carTravelPrice?distance=${distance}&` +
+      `numberOfTravellers=${numberOfTravellers}&` +
+      `fuelConsumption=${fuelConsumption}&` +
+      `fuelPrice=${fuelPrice}`;
     return ajax(uri);
   }
 
   getTrainDataRequest(origin, destination, date, chosenClass, numberOfTravellers): Observable<AjaxResponse> {
-    console.log(origin, destination, date, chosenClass, numberOfTravellers);
-
-    var uri = `http://localhost:5002/trainData?origin=${origin}&` +
-                `destination=${destination}&` +
-                `date=${date}&` +
-                `class=${chosenClass}&` +
-                `numberOfTravellers=${numberOfTravellers}`
+    const uri = `http://localhost:5002/trainData?origin=${origin}&` +
+      `destination=${destination}&` +
+      `date=${date}&` +
+      `class=${chosenClass}&` +
+      `numberOfTravellers=${numberOfTravellers}`;
     return ajax(uri);
   }
 

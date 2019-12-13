@@ -1,5 +1,7 @@
 import {Component} from '@angular/core';
-import {OsrmRootObject} from './interfaces/osrm';
+import {latLng, tileLayer} from 'leaflet';
+import {BackendResult} from './interfaces/backendResult';
+
 
 @Component({
   selector: 'app-root',
@@ -9,17 +11,19 @@ import {OsrmRootObject} from './interfaces/osrm';
   ]
 })
 export class AppComponent {
-  lat = 52.300962;
-  lng = -1.479097;
-  zoom = 6;
+  options = {
+    layers: [
+      tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+    ],
+    zoom: 7,
+    center: latLng(52.370216, 4.895168)
+  };
 
-  selected = 0;
+  private result: BackendResult;
 
-  private osrmRootObject: OsrmRootObject;
-
-  receiveMessage($event) {
-    this.osrmRootObject = $event;
-    this.selected = 0;
+  receiveResultMessage($event) {
+    this.result = $event;
+    console.log(this.result);
   }
 
 }

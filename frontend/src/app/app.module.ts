@@ -1,20 +1,18 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
-import { PlacesComponent } from './places/places.component';
-import { HttpClientModule, /* other http imports */ } from '@angular/common/http';
-import { AgmCoreModule} from '@agm/core';
-import {AngularOpenlayersModule} from 'ngx-openlayers';
-import { FilterComponent } from './filter/filter.component';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {AppComponent} from './app.component';
+import {NavbarComponent} from './navbar/navbar.component';
+import {HttpClientModule} from '@angular/common/http';
+import {AgmCoreModule} from '@agm/core';
+import {FilterComponent} from './filter/filter.component';
+import {LeafletModule} from '@asymmetrik/ngx-leaflet';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    PlacesComponent,
     FilterComponent,
   ],
   imports: [
@@ -24,9 +22,10 @@ import { FilterComponent } from './filter/filter.component';
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyC_dUvrZ8QEAuXGIc2Lbfql9moM0dxMEi4'
     }),
-    AngularOpenlayersModule,
+    LeafletModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

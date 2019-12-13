@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-<app-filter></app-filter>
+<app-filter (resultMessageEvent)="receiveResultMessage($event)"></app-filter>
 
 <!--
 <div class="container p-3">
@@ -9,20 +9,17 @@
 
 <h3>Route</h3>
 <div class="container p-3">
-    <div class="row">
-        <div class="col map">
-          <aol-map [width]="'800px'" height="'900px'">
-            <aol-view [zoom]="zoom">
-              <aol-coordinate [x]="lng" [y]="lat" [srid]="'EPSG:4326'"></aol-coordinate>
-            </aol-view>
-            <aol-layer-tile>
-              <aol-source-osm></aol-source-osm>
-            </aol-layer-tile>
-          </aol-map>
-        </div>
-
-        <div class="col" *ngIf="osrmRootObject">
-          Test
-        </div>
+  <div class="row">
+    <div class="col map">
+      <div style="height: 600px; width: 800px;"
+           leaflet
+           [leafletOptions]="options"
+      >
+      </div>
     </div>
+
+    <div class="col" *ngIf="osrmRootObject">
+      Test
+    </div>
+  </div>
 </div>
