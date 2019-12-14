@@ -1,0 +1,165 @@
+<div id="filter_container">
+  <h3>Filter</h3>
+  <form (ngSubmit)="onSubmit()" #requestForm="ngForm">
+    <div class="form-group row">
+      <label for="date" class="col-md-5">
+        Date </label>
+      <div class="col-md-7">
+        <input type="date" class="form-control" id="date"
+               [(ngModel)]="formModel.trip_date" name="date"
+               #date="ngModel" required>
+        <div [hidden]="date.valid || date.pristine"
+             class="alert alert-danger">
+          Date is required and must be a valid date
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="source" class="col-md-5">Origin</label>
+      <div class="col-md-7">
+        <input type="text" class="form-control" id="source"
+               [(ngModel)]="formModel.trip_source" name="source" #source="ngModel" required>
+        <div [hidden]="source.valid || source.pristine"
+             class="alert alert-danger">
+          Origin is required
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="dest" class="col-md-5">Destination</label>
+      <div class="col-md-7">
+        <input type="text" class="form-control" id="dest"
+               [(ngModel)]="formModel.trip_dest" name="dest" #dest="ngModel" required>
+        <div [hidden]="dest.valid || dest.pristine"
+             class="alert alert-danger">
+          Destination is required
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="number_of_travellers" class="col-md-5">Number of travellers</label>
+      <div class="col-md-7">
+        <select id="number_of_travellers" class="form-control"
+                [(ngModel)]="formModel.trip_number_of_travellers" name="number_of_travellers"
+                #number_of_travellers="ngModel" required>
+          <option *ngFor="let travellers of supportedNumberOfTravellers"
+                  [value]="travellers">{{travellers}}</option>
+        </select>
+        <div [hidden]="number_of_travellers.valid || number_of_travellers.pristine"
+             class="alert alert-danger">
+          Number of travellers is required
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="fuel_types" class="col-md-5">Fuel type</label>
+      <div class="col-md-7">
+        <select id="fuel_types" class="form-control"
+                [(ngModel)]="formModel.car_fuel_type" name="fuel_type"
+                #fuel_type="ngModel" required>
+          <option *ngFor="let fuel_type of supportedFuelTypes"
+                  [value]="fuel_type">{{ fuel_type }}</option>
+        </select>
+        <div [hidden]="fuel_type.valid || fuel_type.pristine"
+             class="alert alert-danger">
+          Fuel type is required
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="fuel_price" class="col-md-5">
+        Fuel price</label>
+      <div class="col-md-7">
+        <input type="number" class="form-control" id="fuel_price"
+               [(ngModel)]="formModel.car_fuel_price" name="fuel_price"
+               #fuel_price="ngModel" required step="0.1">
+        <div [hidden]="fuel_price.valid || fuel_price.pristine"
+             class="alert alert-danger">
+          Fuel price is required and must be a valid number
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="fuel_consumption_car" class="col-md-5">
+        Fuel consumption of your car</label>
+      <div class="col-md-7">
+        <input type="number" class="form-control" id="fuel_consumption_car"
+               [(ngModel)]="formModel.car_fuel_consumption" name="fuel_consumption_car"
+               #fuel_consumption_car="ngModel" required>
+        <div [hidden]="fuel_consumption_car.valid || fuel_consumption_car.pristine"
+             class="alert alert-danger">
+          Fuel consumption of car is required and must be a valid number
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="preferred_classes" class="col-md-5">Preferred class in train</label>
+      <div class="col-md-7">
+        <select id="preferred_classes" class="form-control"
+                [(ngModel)]="formModel.train_preferred_class" name="preferred_class"
+                #preferred_class="ngModel" required>
+          <option *ngFor="let preferred_class of supportedClasses"
+                  [value]="preferred_class">{{ preferred_class }}</option>
+        </select>
+        <div [hidden]="preferred_class.valid || preferred_class.pristine"
+             class="alert alert-danger">
+          Preferred class is required
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="value_on_sustainability" class="col-md-5">Value on sustainability</label>
+      <div class="col-md-7">
+        <input type="range" class="form-control" id="value_on_sustainability" min="0" max="1" step="0.2"
+               [(ngModel)]="formModel.weight_for_sustainability" name="value_on_sustainability" required (change)="recalculateResults()">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="value_on_price" class="col-md-5">Value on price</label>
+      <div class="col-md-7">
+        <input type="range" id="value_on_price" class="form-control" min="0" max="1" step="0.2"
+               [(ngModel)]="formModel.weight_for_price" name="value_on_price" required (change)="recalculateResults()">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="value_on_time" class="col-md-5">Value on time</label>
+      <div class="col-md-7">
+        <input type="range" id="value_on_time" class="form-control" min="0" max="1" step="0.2"
+               [(ngModel)]="formModel.weight_for_time" name="value_on_time" required (change)="recalculateResults()">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success col-md-12">Submit</button>
+  </form>
+  <br>
+  <div id="results" *ngIf="result">
+    <h3>Results</h3>
+    <table class='table'>
+      <tr>
+        <th>Vehicle</th><th>Footprint</th><th>Price</th><th>Duration</th><th>Distance</th>
+      </tr>
+      <tr>
+        <td><em>Car</em></td>
+        <td>{{ result.car_footprint | number:'1.2-2' }}kg</td>
+        <td>{{ result.car_travel_price | number:'1.2-2' }}€</td>
+        <td>{{ result.car_data.routes[0].duration | durationFormat: 's':'hhmmss'}}</td>
+        <td>{{ (result.car_data.routes[0].distance / 1000) | number:'1.2-2' }}km</td>
+      </tr>
+      <tr>
+        <td><em>Train</em></td>
+        <td>{{ result.train_footprint | number:'1.2-2' }}kg</td>
+        <td>{{ result.train_data.price | number:'1.2-2' }}€</td>
+        <td>{{ (result.train_data.duration * 60) | durationFormat: 's':'hhmmss' }}</td>
+        <td>{{ result.train_data.distance | number:'1.2-2' }}km</td>
+      </tr>
+    </table>
+    <div *ngIf="justificationValue !== undefined">
+      <h3>Justification</h3>
+      {{ justificationValue | number:'1.2-2' }} = {{ formModel.weight_for_sustainability }} * {{ this.differences.sustainability | number:'1.2-2' }} / {{ this.biggerValues.sustainability | number:'1.2-2' }}
+      + {{ this.formModel.weight_for_price }} * {{ this.differences.price | number:'1.2-2' }} / {{ this.biggerValues.price | number:'1.2-2' }}
+      + {{ this.formModel.weight_for_time }} * {{ this.differences.duration | number:'1.2-2' }} / {{ this.biggerValues.duration | number:'1.2-2' }} <br />
+      For you, its better to choose <span *ngIf="justificationValue >= 0">car</span><span *ngIf="justificationValue < 0">train</span>,
+      because {{ justificationValue | number:'1.2-2' }} <span *ngIf="justificationValue >= 0">&gt;=</span><span *ngIf="justificationValue < 0">&lt;</span> 0.
+
+    </div>
+  </div>
+</div>

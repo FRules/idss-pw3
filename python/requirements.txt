@@ -1,0 +1,6 @@
+Flask
+Flask-Jsonpify
+flask-restful
+requests
+flask-cors
+geopy
