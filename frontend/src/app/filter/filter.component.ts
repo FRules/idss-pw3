@@ -35,19 +35,24 @@ export class FilterComponent {
     car_fuel_price: 1.46,
     car_fuel_consumption: 7.0,
     train_preferred_class: this.supportedClasses[0],
-    weight_for_sustainability: 5,
-    weight_for_price: 5,
-    weight_for_time: 5
+    weight_for_sustainability: 1,
+    weight_for_price: 1,
+    weight_for_time: 1
   };
 
   result: BackendResult = null;
+
+  differences: { duration: number; price: number; sustainability: number };
+  biggerValues: { duration: number; price: number; sustainability: number };
+  justificationValue: number;
 
 
   constructor(private placesService: PlacesService) {
   }
 
   async onSubmit() {
-    this.result = null;
+    this.result = undefined;
+    this.justificationValue = undefined;
     const request: BackendRequest = this.formModel;
 
     const myReduceFn = ((previousValue, currentValue) => ({...previousValue, ...currentValue}));
@@ -74,7 +79,9 @@ export class FilterComponent {
         return ajaxResponse.response;
       }).concat().reduce(myReduceFn, localResult);
       this.resultMessageEvent.emit(this.result);
+      this.recalculateResults();
     });
+
   }
 
   getCarFootprintRequest(distance, numberOfTravellers, fuelConsumption, fuelType): Observable<AjaxResponse> {
@@ -107,4 +114,20 @@ export class FilterComponent {
     return ajax(uri);
   }
 
+  private recalculateResults() {
+    const result = this.result;
+
+    if (result === undefined) {
+      return;
+    }
+
+    // tslint:disable-next-line:max-line-length
+    this.differences = { sustainability: result.train_footprint - result.car_footprint, price: result.train_data.price - result.car_travel_price, duration: result.train_data.duration - result.car_data.routes[0].duration };
+    // tslint:disable-next-line:max-line-length
+    this.biggerValues = { sustainability: Math.max(result.train_footprint, result.car_footprint), price: Math.max(result.train_data.price, result.car_travel_price), duration: Math.max(result.train_data.duration, result.car_data.routes[0].duration)};
+
+    this.justificationValue = this.formModel.weight_for_sustainability * this.differences.sustainability / this.biggerValues.sustainability
+      + this.formModel.weight_for_price * this.differences.price / this.biggerValues.price
+      + this.formModel.weight_for_time * this.differences.duration / this.biggerValues.duration;
+  }
 }

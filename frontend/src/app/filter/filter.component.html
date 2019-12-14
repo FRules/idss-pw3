@@ -110,22 +110,22 @@
     <div class="form-group row">
       <label for="value_on_sustainability" class="col-md-5">Value on sustainability</label>
       <div class="col-md-7">
-        <input type="range" class="form-control" id="value_on_sustainability" min="0" max="10"
-               [(ngModel)]="formModel.weight_for_sustainability" name="value_on_sustainability" required>
+        <input type="range" class="form-control" id="value_on_sustainability" min="0" max="1" step="0.2"
+               [(ngModel)]="formModel.weight_for_sustainability" name="value_on_sustainability" required (change)="recalculateResults()">
       </div>
     </div>
     <div class="form-group row">
       <label for="value_on_price" class="col-md-5">Value on price</label>
       <div class="col-md-7">
-        <input type="range" id="value_on_price" class="form-control" min="0" max="10"
-               [(ngModel)]="formModel.weight_for_price" name="value_on_price" required>
+        <input type="range" id="value_on_price" class="form-control" min="0" max="1" step="0.2"
+               [(ngModel)]="formModel.weight_for_price" name="value_on_price" required (change)="recalculateResults()">
       </div>
     </div>
     <div class="form-group row">
       <label for="value_on_time" class="col-md-5">Value on time</label>
       <div class="col-md-7">
-        <input type="range" id="value_on_time" class="form-control" min="0" max="10"
-               [(ngModel)]="formModel.weight_for_time" name="value_on_time" required>
+        <input type="range" id="value_on_time" class="form-control" min="0" max="1" step="0.2"
+               [(ngModel)]="formModel.weight_for_time" name="value_on_time" required (change)="recalculateResults()">
       </div>
     </div>
     <button type="submit" class="btn btn-success col-md-12">Submit</button>
@@ -152,5 +152,14 @@
         <td>{{ result.train_data.distance | number:'1.2-2' }}km</td>
       </tr>
     </table>
+    <div *ngIf="justificationValue !== undefined">
+      <h3>Justification</h3>
+      {{ justificationValue | number:'1.2-2' }} = {{ formModel.weight_for_sustainability }} * {{ this.differences.sustainability | number:'1.2-2' }} / {{ this.biggerValues.sustainability | number:'1.2-2' }}
+      + {{ this.formModel.weight_for_price }} * {{ this.differences.price | number:'1.2-2' }} / {{ this.biggerValues.price | number:'1.2-2' }}
+      + {{ this.formModel.weight_for_time }} * {{ this.differences.duration | number:'1.2-2' }} / {{ this.biggerValues.duration | number:'1.2-2' }} <br />
+      For you, its better to choose <span *ngIf="justificationValue >= 0">car</span><span *ngIf="justificationValue < 0">train</span>,
+      because {{ justificationValue | number:'1.2-2' }} <span *ngIf="justificationValue >= 0">&gt;=</span><span *ngIf="justificationValue < 0">&lt;</span> 0.
+
+    </div>
   </div>
 </div>
