@@ -47,12 +47,13 @@ class TrainData(Resource):
     @staticmethod
     def get_stops(trip):
         stops = []
-        for stop in trip["legs"][0]["stops"]:
-            stops.append({
-                "lat": stop["lat"],
-                "lng": stop["lng"],
-                "name": stop["name"]
-            })
+        for leg in trip["legs"]:
+            for stop in leg["stops"]:
+                stops.append({
+                    "lat": stop["lat"],
+                    "lng": stop["lng"],
+                    "name": stop["name"]
+                })
         return stops
 
     @staticmethod
