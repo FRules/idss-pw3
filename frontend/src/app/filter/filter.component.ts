@@ -62,6 +62,7 @@ export class FilterComponent {
       request.trip_number_of_travellers).toPromise();
 
     const localResult: BackendResult = trainDataAjaxResponse.response;
+    localResult.train_data.duration *= 60;
 
     const osrmRootObject: OsrmRootObject = await this.placesService.getOsrmResponse(localResult.train_data.stops[0],
       localResult.train_data.stops[localResult.train_data.stops.length - 1]).toPromise();

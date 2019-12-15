@@ -148,7 +148,7 @@
         <td><em>Train</em></td>
         <td>{{ result.train_footprint | number:'1.2-2' }}kg</td>
         <td>{{ result.train_data.price | number:'1.2-2' }}€</td>
-        <td>{{ (result.train_data.duration * 60) | durationFormat: 's':'hhmmss' }}</td>
+        <td>{{ result.train_data.duration | durationFormat: 's':'hhmmss' }}</td>
         <td>{{ result.train_data.distance | number:'1.2-2' }}km</td>
       </tr>
     </table>
