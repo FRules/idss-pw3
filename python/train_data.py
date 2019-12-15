@@ -1,8 +1,8 @@
+import requests
 from flask import request
 from flask_restful import Resource
 from flask_jsonpify import jsonify
 
-from urllib.request import Request, urlopen
 import json
 import geopy.distance
 
@@ -12,6 +12,11 @@ class TrainData(Resource):
     required_parameters = ["origin", "destination", "date", "class", "numberOfTravellers"]
     apikey = 'fcdbd1c4a6a3444a84f8d0d6142d2e6f'
 
+    @staticmethod
+    def _get_shortest_trip(trips):
+        trips_sorted = sorted(trips, key=lambda k: k['optimal'], reverse=True)
+        return trips_sorted[0]
+
     def get(self):
         args = request.args
         for required_parameter in self.required_parameters:
@@ -19,7 +24,15 @@ class TrainData(Resource):
                 return jsonify({"error": "Not all parameters provided. Needed parameters: "
                                          "origin, destination, date, class, numberOfTravellers"})
 
-        trip = self.train_search(args["origin"], args["destination"], args["date"])["trips"][0]
+        try:
+            response = self.train_search(args["origin"], args["destination"], args["date"])
+        except Exception as e:
+            return jsonify({
+                "error": str(e)
+            })
+
+        trip = self._get_shortest_trip(response["trips"])
+
         stops = self.get_stops(trip)
         distance = self.get_distance(stops)
         price = self.get_price(trip, args["class"], int(args["numberOfTravellers"]))
@@ -70,8 +83,14 @@ class TrainData(Resource):
 
     def train_search(self, origin, destination, date):
         url = 'https://gateway.apiportal.ns.nl/public-reisinformatie/api/v3/trips'
-        url = url + '?fromStation=' + str(origin) + '&toStation=' + str(destination)
-        url = url + '&dateTime=' + date
-        req = Request(url)
-        req.add_header('Ocp-Apim-Subscription-Key', self.apikey)
-        return json.load(urlopen(req))
+        params = {
+            'fromStation': str(origin),
+            'toStation': str(destination),
+            'dateTime': str(date)
+        }
+
+        req = requests.get(url, params=params, headers={'Ocp-Apim-Subscription-Key': self.apikey})
+
+        if req.status_code != 200:
+            raise Exception(req.json()['errors'][0]['type'])
+        return req.json()
